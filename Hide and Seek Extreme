@@ -3,39 +3,29 @@ local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 
 local userInput = game:GetService("UserInputService")
-
-
 local gui = Instance.new("ScreenGui")
 gui.Name = "GameUI"
 gui.Parent = player:WaitForChild("PlayerGui")
-
 local StarterGui = game:GetService("StarterGui")
-
-
-
-
 
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 648,0, 452)
-mainFrame.Position = UDim2.new(0.293, 0,0.224, 0)
+mainFrame.Size = UDim2.new(0, 648, 0, 452)
+mainFrame.Position = UDim2.new(0.293, 0, 0.224, 0)
 mainFrame.BackgroundTransparency = 0.2
 mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 mainFrame.BorderSizePixel = 0
 mainFrame.Visible = false
 mainFrame.Parent = gui
 
-
 local uiCorner = Instance.new("UICorner")
 uiCorner.CornerRadius = UDim.new(0.05, 0)
 uiCorner.Parent = mainFrame
 
-
-
 if userInput.TouchEnabled and not userInput.KeyboardEnabled then
 	local mobileButton = Instance.new("ImageButton")
-	mobileButton.Size = UDim2.new(0, 62,0, 57)
-	mobileButton.Position = UDim2.new(0.055, 0,0.103, 0)
+	mobileButton.Size = UDim2.new(0, 62, 0, 57)
+	mobileButton.Position = UDim2.new(0.055, 0, 0.103, 0)
 	mobileButton.Image = "rbxassetid://139700367904039"
 	mobileButton.BackgroundTransparency = 1
 	mobileButton.Parent = gui
@@ -61,19 +51,15 @@ if userInput.TouchEnabled and not userInput.KeyboardEnabled then
 			dragging = false
 		end
 	end)
+
 	local uiCorner = Instance.new("UICorner")
 	uiCorner.CornerRadius = UDim.new(0, 7)
 	uiCorner.Parent = mobileButton
-
 
 	mobileButton.MouseButton1Click:Connect(function()
 		mainFrame.Visible = not mainFrame.Visible
 	end)
 end
-
-local userInput = game:GetService("UserInputService")
-
-
 
 if userInput.KeyboardEnabled then
 	local dragging = false
@@ -126,15 +112,10 @@ if userInput.TouchEnabled then
 	end)
 end
 
-
-
-
-
 local uiStroke = Instance.new("UIStroke")
 uiStroke.Color = Color3.fromRGB(80, 80, 80)
 uiStroke.Thickness = 1.5
 uiStroke.Parent = mainFrame
-
 
 local titleLabel = Instance.new("TextLabel")
 titleLabel.Text = "Game UI"
@@ -144,7 +125,6 @@ titleLabel.TextSize = 20
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 titleLabel.Font = Enum.Font.GothamBold
 titleLabel.Parent = mainFrame
-
 
 local function createButton(name, text, position)
 	local button = Instance.new("TextButton")
@@ -159,7 +139,6 @@ local function createButton(name, text, position)
 	button.Text = text
 	button.Parent = mainFrame
 
-
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(0.1, 0)
 	corner.Parent = button
@@ -167,22 +146,42 @@ local function createButton(name, text, position)
 	return button
 end
 
-
 local teleportButtons = {
-	{name = "TeleportRedLight", text = "Teleport to Red Light", position = Vector3.new(131, 2, 743)},
+	{name = "AfkGrinding", text = "Afk Grinding", position = Vector3.new(648.25, 603.277, -15193.252)},
 	{name = "TeleportLobby", text = "Teleport to Lobby", position = Vector3.new(76.6, 5.52, -84.1)},
 	{name = "TeleportPiggyBank", text = "Teleport to Piggy Bank", position = Vector3.new(73.803, 25.388, -73.896)}
 }
 
+local isAfk = false
+
 for i, data in ipairs(teleportButtons) do
 	local button = createButton(data.name, data.text, 0.15 + (i - 1) * 0.18)
+
 	button.MouseButton1Click:Connect(function()
-		if character and character:FindFirstChild("HumanoidRootPart") then
-			character.HumanoidRootPart.CFrame = CFrame.new(data.position)
+		if data.name == "AfkGrinding" then
+			isAfk = not isAfk
+			button.Text = isAfk and "Unafk" or "Afk Grinding"
+
+			if isAfk then
+				character.HumanoidRootPart.CFrame = CFrame.new(data.position)
+				character.HumanoidRootPart.Anchored = true
+			else
+				character.HumanoidRootPart.Anchored = false
+				character.HumanoidRootPart.CFrame = workspace:WaitForChild("Map"):WaitForChild("SpawnLocations"):FindFirstChild("SpawnPoint").CFrame
+			end
+		else
+			local randomPlayer = game.Players:GetPlayers()
+			table.remove(randomPlayer, table.find(randomPlayer, player))
+			local targetPlayer = randomPlayer[math.random(1, #randomPlayer)]
+
+			if targetPlayer and targetPlayer.Character then
+				character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame
+			else
+				character.HumanoidRootPart.CFrame = CFrame.new(data.position)
+			end
 		end
 	end)
 end
-
 
 local function createTextBox(name, placeholder, position)
 	local textBox = Instance.new("TextBox")
@@ -198,7 +197,6 @@ local function createTextBox(name, placeholder, position)
 	textBox.ClearTextOnFocus = false
 	textBox.Parent = mainFrame
 
-
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(0.1, 0)
 	corner.Parent = textBox
@@ -206,39 +204,29 @@ local function createTextBox(name, placeholder, position)
 	return textBox
 end
 
-
 local walkSpeedBox = createTextBox("WalkSpeedBox", "Enter WalkSpeed", 0.7)
 local jumpPowerBox = createTextBox("JumpPowerBox", "Enter JumpPower", 0.85)
-
 
 userInput.InputBegan:Connect(function(input, gameProcessed)
 	if userInput:IsKeyDown(Enum.KeyCode.RightShift) then
 		mainFrame.Visible = not mainFrame.Visible
 	end
-
 end)
-
 
 task.spawn(function()
 	while true do
-
 		if character and character:FindFirstChild("Humanoid") then
-
 			humanoid.WalkSpeed = tonumber(walkSpeedBox.Text) or 16
 			humanoid.JumpPower = tonumber(jumpPowerBox.Text) or 50
 		end
-		task.wait(0.1) 
+		task.wait(0.1)
 	end
 end)
-
 
 player.CharacterAdded:Connect(function(newCharacter)
 	character = newCharacter
 	humanoid = character:WaitForChild("Humanoid")
 end)
-
-
-
 
 StarterGui:SetCore("SendNotification", {
 	Title = "Hide and Seek Extreme Script";  
