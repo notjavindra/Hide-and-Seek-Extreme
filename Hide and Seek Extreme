@@ -167,7 +167,7 @@ for i, data in ipairs(teleportButtons) do
 				character.HumanoidRootPart.Anchored = true
 			else
 				character.HumanoidRootPart.Anchored = false
-				character.HumanoidRootPart.CFrame = workspace:WaitForChild("Map"):WaitForChild("SpawnLocations"):FindFirstChild("Bright green").CFrame
+				character.HumanoidRootPart.CFrame = workspace:WaitForChild("Map"):WaitForChild("SpawnLocations")["Bright green"].CFrame
 			end
 		else
 			local randomPlayer = game.Players:GetPlayers()
