@@ -153,6 +153,7 @@ local teleportButtons = {
 }
 
 local isAfk = false
+local CollectCoins = false
 
 for i, data in ipairs(teleportButtons) do
 	local button = createButton(data.name, data.text, 0.15 + (i - 1) * 0.18)
@@ -165,7 +166,13 @@ for i, data in ipairs(teleportButtons) do
 			if isAfk then
 				character.HumanoidRootPart.CFrame = CFrame.new(data.position)
 				character.HumanoidRootPart.Anchored = true
-			else
+				for _, obj in ipairs(workspace:WaitForChild("GameObjects"):GetDescendants()) do
+					if obj:IsA("Part") and obj.Name == "Credits" then
+						obj.CFrame = character.HumanoidRootPart.CFrame
+					end
+				end
+				else
+							
 				character.HumanoidRootPart.Anchored = false
 				character.HumanoidRootPart.CFrame = workspace:WaitForChild("Map"):WaitForChild("SpawnLocations")["Bright green"].CFrame
 			end
@@ -182,6 +189,8 @@ for i, data in ipairs(teleportButtons) do
 		end
 	end)
 end
+
+
 
 local function createTextBox(name, placeholder, position)
 	local textBox = Instance.new("TextBox")
