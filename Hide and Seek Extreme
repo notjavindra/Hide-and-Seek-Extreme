@@ -1,9 +1,9 @@
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/ionlyusegithubformcmods/1-Line-Scripts/main/Mobile%20Friendly%20Orion')))()
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/ionlyusegithubformcmods/1-Line-Scripts/main/Mobile%20Friendly%20Orion"))()
 local Player = game.Players.LocalPlayer
 
 -- Create UI Window
 local Window = OrionLib:MakeWindow({
-    Name = "ForzaHub TheRake",
+    Name = "ForzaHub Hide and Seek Extreme",
     HidePremium = false,
     SaveConfig = true,
     ConfigFolder = "OrionTest",
@@ -54,7 +54,7 @@ Tab:AddTextbox({
     end  
 })
 
--- Loop to constantly apply WalkSpeed and JumpPower
+-- Constantly apply WalkSpeed and JumpPower
 spawn(function()
     while true do
         if Player.Character and Player.Character:FindFirstChild("Humanoid") then
@@ -65,3 +65,63 @@ spawn(function()
         wait(0.0)
     end
 end)
+
+-- AutoAfk Feature
+local AutoAfk = false
+local lastPositionCFrame
+
+Tab:AddToggle({
+    Name = "AutoAfk",
+    Default = false,
+    Callback = function(Value)
+        AutoAfk = Value
+        local char = Player.Character
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+
+        if AutoAfk then
+            if hrp then
+                lastPositionCFrame = hrp.CFrame
+            end
+
+            spawn(function()
+                while AutoAfk do
+                    pcall(function()
+                        local char = Player.Character
+                        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+                        if char and hrp then
+                            if not workspace:FindFirstChild("AFKPart") then
+                                local part = Instance.new("Part")
+                                part.Name = "AFKPart"
+                                part.Anchored = true
+                                part.Size = Vector3.new(4, 1, 4)
+                                part.Position = Vector3.new(-3943.013, 232.83, 128.657)
+                                part.Transparency = 0.5
+                                part.CanCollide = true
+                                part.Parent = workspace
+                            end
+
+                            char:MoveTo(Vector3.new(-3943.013, 235.83, 128.657)) -- Offset to float above part
+                            wait(0.2)
+                            hrp.Anchored = true
+                        end
+                    end)
+                    wait(1)
+                end
+            end)
+        else
+            pcall(function()
+                local char = Player.Character
+                local hrp = char and char:FindFirstChild("HumanoidRootPart")
+                if char and hrp and lastPositionCFrame then
+                    hrp.CFrame = lastPositionCFrame
+                    hrp.Anchored = false
+                end
+                local part = workspace:FindFirstChild("AFKPart")
+                if part then part:Destroy() end
+            end)
+        end
+    end
+})
+
+-- Finish UI setup
+OrionLib:Init()
